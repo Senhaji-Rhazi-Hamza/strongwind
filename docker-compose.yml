@@ -6,7 +6,7 @@ services:
     environment:
       DATA_PATH: /app/data/runs.csv
     volumes:
-      - ./data:/app/data:ro
+      - ./data:/app/data
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
