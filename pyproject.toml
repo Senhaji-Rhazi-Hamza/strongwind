@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gpu-observability"
+version = "0.1.0"
+description = "Simulated GPU workload observability with DuckDB, Sanic, and Grafana"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "click>=8.1.8",
+  "duckdb>=1.2.0",
+  "faker>=36.1.1",
+  "sanic>=24.12.0",
+]
+
+[project.scripts]
+gpu-obs = "gpu_observability.cli.main:cli"
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3.4",
+  "ruff>=0.9.7",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gpu_observability"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+

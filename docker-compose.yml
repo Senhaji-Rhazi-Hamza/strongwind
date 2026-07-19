@@ -1,0 +1,29 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATA_PATH: /app/data/runs.csv
+    volumes:
+      - ./data:/app/data:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  grafana:
+    image: grafana/grafana:latest
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+    environment:
+      GF_INSTALL_PLUGINS: marcusolsson-json-datasource
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+      GF_SECURITY_ADMIN_USER: strong
+      GF_SECURITY_ADMIN_PASSWORD: wind
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+

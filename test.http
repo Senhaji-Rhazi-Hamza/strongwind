@@ -1,0 +1,19 @@
+### Summary by researcher
+# Retrieves aggregated GPU run metrics grouped by researcher.
+GET http://localhost:8000/summary
+Accept: application/json
+
+### Waste runs with low GPU utilization
+# Retrieves rows where GPU utilization is below 50%.
+GET http://localhost:8000/waste
+Accept: application/json
+
+### Runs grouped by model
+# Retrieves counts and aggregate GPU hours per model.
+GET http://localhost:8000/by-model
+Accept: application/json
+
+### Daily GPU hours trend
+# Retrieves total GPU hours and run counts per calendar date.
+GET http://localhost:8000/trend
+Accept: application/json

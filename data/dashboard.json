@@ -1,0 +1,205 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_JSON_API",
+      "label": "JSON API",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "marcusolsson-json-datasource",
+      "pluginName": "JSON API"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "datasource",
+      "id": "marcusolsson-json-datasource",
+      "name": "JSON API",
+      "version": "1.0.0"
+    }
+  ],
+  "title": "GPU Observability — Mistral Science",
+  "uid": "gpu-observability",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "GPU Hours per Researcher",
+      "type": "barchart",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "datasource": { "type": "marcusolsson-json-datasource", "uid": "bfsb63igiz0n4f" },
+      "targets": [
+        {
+          "refId": "A",
+          "urlPath": "/summary",
+          "method": "GET",
+          "fields": [
+            {
+              "name": "researcher",
+              "jsonPath": "$[*].researcher",
+              "type": "string"
+            },
+            {
+              "name": "total_gpu_hours",
+              "jsonPath": "$[*].total_gpu_hours",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "options": {
+        "orientation": "vertical",
+        "xField": "researcher",
+        "colorByField": "researcher"
+      }
+    },
+    {
+      "id": 2,
+      "title": "Failed Runs per Researcher",
+      "type": "barchart",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "datasource": { "type": "marcusolsson-json-datasource", "uid": "bfsb63igiz0n4f" },
+      "targets": [
+        {
+          "refId": "A",
+          "urlPath": "/summary",
+          "method": "GET",
+          "fields": [
+            {
+              "name": "researcher",
+              "jsonPath": "$[*].researcher",
+              "type": "string"
+            },
+            {
+              "name": "failed_runs",
+              "jsonPath": "$[*].failed_runs",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "options": {
+        "orientation": "vertical",
+        "xField": "researcher"
+      }
+    },
+    {
+      "id": 3,
+      "title": "GPU Hours per Model",
+      "type": "piechart",
+      "gridPos": { "x": 0, "y": 8, "w": 8, "h": 8 },
+      "datasource": { "type": "marcusolsson-json-datasource", "uid": "bfsb63igiz0n4f" },
+      "targets": [
+        {
+          "refId": "A",
+          "urlPath": "/by-model",
+          "method": "GET",
+          "fields": [
+            { "name": "model", "jsonPath": "$[*].model", "type": "string" },
+            {
+              "name": "total_gpu_hours",
+              "jsonPath": "$[*].total_gpu_hours",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "options": {
+        "pieType": "pie",
+        "displayLabels": ["name", "percent"]
+      }
+    },
+    {
+      "id": 4,
+      "title": "Daily GPU Consumption Trend",
+      "type": "timeseries",
+      "gridPos": { "x": 8, "y": 8, "w": 16, "h": 8 },
+      "datasource": { "type": "marcusolsson-json-datasource", "uid": "bfsb63igiz0n4f" },
+      "targets": [
+        {
+          "refId": "A",
+          "urlPath": "/trend",
+          "method": "GET",
+          "fields": [
+            { "name": "date", "jsonPath": "$[*].date", "type": "time" },
+            {
+              "name": "total_gpu_hours",
+              "jsonPath": "$[*].total_gpu_hours",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "options": {
+        "tooltip": { "mode": "single" }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Wasted GPU Runs (utilization < 50%)",
+      "type": "table",
+      "gridPos": { "x": 0, "y": 16, "w": 24, "h": 8 },
+      "datasource": { "type": "marcusolsson-json-datasource", "uid": "bfsb63igiz0n4f" },
+      "targets": [
+        {
+          "refId": "A",
+          "urlPath": "/waste",
+          "method": "GET",
+          "fields": [
+            {
+              "name": "researcher",
+              "jsonPath": "$[*].researcher",
+              "type": "string"
+            },
+            { "name": "model", "jsonPath": "$[*].model", "type": "string" },
+            {
+              "name": "experiment_type",
+              "jsonPath": "$[*].experiment_type",
+              "type": "string"
+            },
+            {
+              "name": "gpu_count",
+              "jsonPath": "$[*].gpu_count",
+              "type": "number"
+            },
+            {
+              "name": "gpu_utilization_pct",
+              "jsonPath": "$[*].gpu_utilization_pct",
+              "type": "number"
+            },
+            {
+              "name": "gpu_hours",
+              "jsonPath": "$[*].gpu_hours",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "gpu_utilization_pct" },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    { "color": "red", "value": 0 },
+                    { "color": "orange", "value": 30 },
+                    { "color": "green", "value": 50 }
+                  ]
+                }
+              },
+              { "id": "custom.displayMode", "value": "color-background" }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "sortBy": [{ "displayName": "gpu_hours", "desc": true }]
+      }
+    }
+  ]
+}

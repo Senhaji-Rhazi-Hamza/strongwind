@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpu-observability-api
+  labels:
+    app: gpu-observability
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gpu-observability-api
+  template:
+    metadata:
+      labels:
+        app: gpu-observability-api
+    spec:
+      containers:
+        - name: api
+          image: gpu-observability:latest
+          imagePullPolicy: Never
+          env:
+            - name: DATA_PATH
+              value: /app/data/runs.csv
+          volumeMounts:
+            - name: data-volume
+              mountPath: /app/data
+          ports:
+            - containerPort: 8000
+      volumes:
+        - name: data-volume
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gpu-observability-api
+spec:
+  selector:
+    app: gpu-observability-api
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      protocol: TCP
